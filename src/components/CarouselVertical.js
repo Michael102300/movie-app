@@ -16,20 +16,20 @@ import { getGenreMovieApi } from '../api/movies';
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = Math.round(width* 0.7);
 
-export default function CarouselVertical(props){
-    const { data } = props;
+export default function CarouselVertical({ data, navigation }){
     return (
         <Carousel 
             layout={'default'}
             data={data}
-            renderItem= {(item) => <RenderItem data={item} />}
+            renderItem= {(item) => <RenderItem data={item} navigation={navigation} />}
             sliderWidth= {width}
             itemWidth= {ITEM_WIDTH}
         />
     )
 }
 function RenderItem(props){
-    const { title, poster_path , genre_ids} = props.data.item;
+    const { data, navigation} = props
+    const { id, title, poster_path , genre_ids} = data.item;
     const [ genres, setGenres ] = useState(null);
 
 
@@ -41,8 +41,12 @@ function RenderItem(props){
                 setGenres(response);
             })
     },[])
+
+    const onNavigation = () => {
+        navigation.navigate('movie', { id });
+    }
     return (
-        <TouchableWithoutFeedback onPress={() => console.log('hola')}>
+        <TouchableWithoutFeedback onPress={onNavigation}>
             <View style={styles.card}>
                 <Image  style={styles.image} source={{ uri: imageUrl}}/>
                 <Title style={styles.title}> { title}</Title>
