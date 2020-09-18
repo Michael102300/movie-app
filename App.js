@@ -1,4 +1,4 @@
-import React from 'react';
+import React , { useState, useMemo }from 'react';
 import { 
   Provider as PaperProvider, 
   DarkTheme as DarkThemePaper, 
@@ -11,9 +11,12 @@ import {
 } from '@react-navigation/native'
 import { StatusBar } from 'react-native'
 import Navigation from './src/navigation/Navigation';
+import PreferencesContext from './src/context/PreferencesContext';
 
 
 export default function App(){
+
+  const [ theme, setTheme ] = useState('dark');
 
   DefaultThemePaper.colors.primary= '#1ae1f2';
   DarkThemePaper.colors.primary='#1ae1f2';
@@ -21,12 +24,28 @@ export default function App(){
 
   DarkThemeNavigation.colors.background= '#192734';
   DarkThemeNavigation.colors.card= '#15212b';
+
+  const toggleTheme = () => {
+    setTheme( theme === 'dark' ? 'light' : 'dark')
+  }
+  const preference = useMemo(
+    () => ({
+      toggleTheme,
+      theme
+    }),
+    [theme],
+  )
   return(
-    <PaperProvider theme={DarkThemePaper}>
-      <NavigationContainer theme={DarkThemeNavigation}>
-        <StatusBar barStyle={'light-content'}/>
-        <Navigation/>
-      </NavigationContainer>
-    </PaperProvider>
+    <PreferencesContext.Provider value={ preference }>
+      <PaperProvider 
+        theme={theme === 'dark' ? DarkThemePaper : DefaultThemePaper}>
+        <StatusBar 
+          barStyle={theme === 'dark' ? 'light-content' : 'dark-content'}/>
+        <NavigationContainer 
+          theme={theme === 'dark' ? DarkThemeNavigation : DefaultThemeNavigation }>
+          <Navigation/>
+        </NavigationContainer>
+      </PaperProvider>
+    </PreferencesContext.Provider>
   )
 };

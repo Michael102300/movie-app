@@ -11,10 +11,29 @@ import Search from '../screens/Search';
 const Stack = createStackNavigator();
 
 export default StackNavigation = ( { navigation }) => {
-    const buttonLeft = () => (
+    const buttonLeft = ( screen ) => {
+        switch( screen ) {
+            case 'search': 
+            case 'movie':
+                return(
+                    <IconButton
+                        icon="arrow-left"
+                        onPress={ () => navigation.goBack()}
+                />
+                )
+            default:
+                return (
+                    <IconButton
+                        icon="menu"
+                        onPress={ () => navigation.openDrawer()}
+                    />
+                )
+        }
+    }
+    const buttonRight = () => (
         <IconButton
-            icon="menu"
-            onPress={ () => navigation.openDrawer()}
+            icon='magnify'
+            onPress={ () => navigation.navigate('search')}
         />
     )
     return (
@@ -22,27 +41,41 @@ export default StackNavigation = ( { navigation }) => {
             <Stack.Screen
                 name="home" 
                 component={Home} 
-                options={{ title: 'MovieApp', headerLeft: () => buttonLeft() }} 
+                options={{ 
+                    title: 'MovieApp', 
+                    headerLeft: () => buttonLeft('home'), 
+                    headerRight: () => buttonRight() }} 
             />
             <Stack.Screen 
                 name="movie" 
                 component={Movie} 
-                options={{ title: '' , headerLeft: () => buttonLeft()}} 
+                options={{ 
+                    title: '' , 
+                    headerLeft: () => buttonLeft('movie'), 
+                    headerRight: () => buttonRight()}} 
             />
             <Stack.Screen 
                 name="news" 
                 component={News} 
-                options={{ title: 'News movies' , headerLeft: () => buttonLeft()}} 
+                options={{ 
+                    title: 'News movies' , 
+                    headerLeft: () => buttonLeft('news'), 
+                    headerRight: () => buttonRight()}} 
             />
             <Stack.Screen 
                 name="popular" 
                 component={Popular} 
-                options={{ title: 'Popular movies', headerLeft: () => buttonLeft() }} 
+                options={{ 
+                    title: 'Popular movies', 
+                    headerLeft: () => buttonLeft('popular'), 
+                    headerRight: () => buttonRight() }} 
             />
             <Stack.Screen 
                 name="search" 
                 component={Search} 
-                options={{ title: '' , headerLeft: () => buttonLeft()}} 
+                options={{ 
+                    title: '' , 
+                    headerLeft: () => buttonLeft('search')}} 
             />
         </Stack.Navigator>
     )
