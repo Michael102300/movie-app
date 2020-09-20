@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, StyleSheet, ScrollView } from 'react-native';
-import { Text, Title, IconButton} from 'react-native-paper';
+import { Title, IconButton, Text} from 'react-native-paper';
+import { map } from 'lodash';
+import { Rating } from 'react-native-ratings';
 
 import { getMovieByIdApi } from '../api/movies';
 import { BASE_PATH_IMG } from '../utils/constants';
+import usePreferences from '../hooks/usePreferences';
 import ModalVideo from '../components/ModalVideo';
+import starDark from '../assets/png/starDark.png';
+import starLight from '../assets/png/starLight.png';
 
 export default function Movie(props){
     const { route } = props;
     const { id } = route.params;
     const [ movie, setMovie ] = useState(null);
     const [ showVideo, setShowVideo] = useState(false)
-
 
     useEffect(()=> {
         getMovieByIdApi(id).then((response) => {
@@ -21,15 +25,32 @@ export default function Movie(props){
     if(!movie) return null;
     return (
         <>
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <MovieImage
                     posterPath={movie.poster_path}
                 />
                 <MovieTrailer
                     setShowVideo={setShowVideo}
                 />
+                <MovieTitle
+                    movie={movie}
+                />
+                <MovieRating 
+                    voteCount={movie.vote_count}
+                    voteAverage={movie.vote_average}
+                />
+                <Text style={styles.overview}>
+                    {movie.overview}
+                </Text>
+                <Text style={[styles.overview, { marginBottom: 30}]}>
+                    Fecha de lanzamiento: {movie.release_date}
+                </Text>
             </ScrollView>
-            <ModalVideo show={showVideo} setShow={setShowVideo}/>
+            <ModalVideo 
+                show={showVideo} 
+                setShow={setShowVideo}
+                idMovie={id}
+            />
         </>
     );
 };
@@ -62,6 +83,48 @@ function MovieTrailer(props) {
     )
 }   
 
+function MovieTitle(props) {
+    const {movie} = props;
+    return (
+        <View style={styles.viewInfo}>
+            <Title>
+                {movie.title}
+            </Title>
+            <View style={styles.viewGenres}> 
+                {map(movie.genres, ( genre ) => (
+                    <Text key={genre.id} style={styles.genre}>
+                        {genre.name}
+                    </Text>
+                ))}
+            </View>
+        </View>
+    )
+
+}
+
+function MovieRating(props) {
+    const { voteCount, voteAverage } = props;
+    const media = voteAverage/2;
+
+    const { theme } = usePreferences();
+    return(
+        <View style={styles.viewRating}>
+            <Rating 
+                type='custom'
+                ratingImage={ theme === 'dark' ? starDark : starLight}
+                ratingColor='#ffc205'
+                ratingBackgroundColor={ theme === 'dark' ? '#192734' : '#f0f0f0'}
+                startingValue={media}
+                imageSize={20}
+                style={styles.rating}
+            />
+            <Text style={{ fontSize: 16, marginRight: 5}}>{media}</Text>
+            <Text style={{ fontSize: 12, color: '#8697a5'}}>
+                {voteCount} votos
+            </Text>
+        </View>
+    )
+}
 const styles = StyleSheet.create({
     viewPoster:{
         shadowColor: '#000',
@@ -88,5 +151,30 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 100,
+    },
+    viewInfo:{
+        marginHorizontal: 30
+    },
+    viewGenres:{
+        flexDirection: 'row'
+    },
+    genre:{
+        marginRight: 20,
+        color: '#8697a5'
+    },
+    viewRating:{
+        marginHorizontal: 30,
+        marginTop: 10,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    rating: {
+        marginRight: 15
+    },
+    overview: {
+        marginHorizontal: 30,
+        marginTop: 20,
+        color: '#8697a5',
+        textAlign: "justify"
     }
 })
