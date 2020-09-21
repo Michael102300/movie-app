@@ -67,7 +67,7 @@ export default StackNavigation = ( { navigation }) => {
                 name="popular" 
                 component={Popular} 
                 options={{ 
-                    title: 'Popular movies', 
+                    title: 'Popular movies',
                     headerLeft: () => buttonLeft('popular'), 
                     headerRight: () => buttonRight() }} 
             />
@@ -76,6 +76,7 @@ export default StackNavigation = ( { navigation }) => {
                 component={Search} 
                 options={{ 
                     title: '' , 
+                    headerTransparent : true,
                     headerLeft: () => buttonLeft('search')}} 
             />
         </Stack.Navigator>

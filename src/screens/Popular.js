@@ -1,5 +1,5 @@
 import React, { useState, useEffect} from 'react';
-import {StyleSheet, ScrollView, View, Image } from 'react-native';
+import {StyleSheet, ScrollView, View, Image, TouchableWithoutFeedback } from 'react-native';
 import { Text, Title , Button } from 'react-native-paper';
 import { map } from 'lodash';
 import { Rating } from 'react-native-ratings';
@@ -39,6 +39,7 @@ export default Popular = ( props ) => {
                     key= {index}
                     movie={movie}
                     theme={theme}
+                    navigation={navigation}
                 />
             ))}
             {showButtonMore && (
@@ -58,34 +59,40 @@ export default Popular = ( props ) => {
 };
 
 function Movie( props ) {
-    const { movie, theme } = props;
-    const { poster_path, title, release_date, vote_count, vote_average } = movie
-    return (
-        <View style={styles.movie}>
-            <View style={styles.left}>
-                <Image 
-                    style={styles.image}
-                    source={
-                        poster_path ? { uri : `${BASE_PATH_IMG}/w500${poster_path}`}
-                        : notImage
-                    }
-                />
-            </View>
-            <View>
-                <Title>
-                    {title}
-                </Title>
-                <Text>
-                    {release_date}
-                </Text>
-                <MovieRating
-                    voteCount={vote_count}
-                    voteAverage={vote_average}
-                    theme={theme}
-                />
+    const { movie, theme, navigation } = props;
+    const { id, poster_path, title, release_date, vote_count, vote_average } = movie
 
+    const goMovie = () => {
+        navigation.navigate('movie', { id })
+    }
+    return (
+        <TouchableWithoutFeedback onPress={goMovie}>
+            <View style={styles.movie}>
+                <View style={styles.left}>
+                    <Image 
+                        style={styles.image}
+                        source={
+                            poster_path ? { uri : `${BASE_PATH_IMG}/w500${poster_path}`}
+                            : notImage
+                        }
+                    />
+                </View>
+                <View>
+                    <Title>
+                        {title}
+                    </Title>
+                    <Text>
+                        {release_date}
+                    </Text>
+                    <MovieRating
+                        voteCount={vote_count}
+                        voteAverage={vote_average}
+                        theme={theme}
+                    />
+
+                </View>
             </View>
-        </View>
+        </TouchableWithoutFeedback>
     )
 }
 
